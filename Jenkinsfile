@@ -1,19 +1,20 @@
 pipeline {
-     // 전역 에이전트를 사용하지 않음으로써 컨테이너 중첩 방지
-    agent none 
+
+    // 전역 에이전트를 사용하지 않음으로써 컨테이너 중첩 방지
+    agent none
 
     environment {
-        NETLIFY_SITE_ID = '자신의 사이트 ID'
+        NETLIFY_SITE_ID = '954982c2-7dee-4008-9849-3d3d3e4ec16f'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
     stages {
         stage('AWS') {
             agent {
-                docker { 
+                docker {
                     image 'amazon/aws-cli'
-                    // aws-cli 이미지는 기본적으로 실행 후 바로 종료되므로 엔트리포인트 무력화
-                    args "--entrypoint=''" 
+                    // aws-cli 이미지는 기본적으로 실행 후 바로 중단되므로 엔트리포인트 무력화
+                    args "--entrypoint=''"
                 }
             }
             steps {
@@ -27,7 +28,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo '빌드 시작..'
+                    echo '빌드 시작 ...'
                     node --version
                     npm --version
                     npm ci
@@ -41,9 +42,7 @@ pipeline {
                 docker { image 'mcr.microsoft.com/playwright:v1.39.0-jammy' }
             }
             steps {
-                sh '''
-                    npm test
-                '''
+                sh 'npm test'
             }
         }
 
@@ -73,11 +72,12 @@ pipeline {
             }
         }
 
-        stage('Approval'){
+        stage('Approval') {
             agent none
             steps {
                 timeout(time: 15, unit: 'MINUTES') {
-                    input message: '운영환경에 배포할까요?', ok: '네 배포합니다'
+                    input message: '운영 환경에 배포할까요?',
+                      ok: '네, 배포합니다.'
                 }
             }
         }
@@ -99,13 +99,15 @@ pipeline {
                 docker { image 'mcr.microsoft.com/playwright:v1.39.0-jammy' }
             }
             environment {
-                CI_ENVIRONMENT_URL = 'https://legendary-mousse-2c5c10.netlify.app'
+                CI_ENVIRONMENT_URL = 'https://spiffy-baklava-487682.netlify.app'
             }
             steps {
-                sh 'npx playwright test --reporter=html'
+                sh '''
+                    npx playwright test --reporter=html
+                '''
             }
         }
     }
 
-   
+    
 }

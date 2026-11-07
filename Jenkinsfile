@@ -4,7 +4,7 @@ pipeline {
     agent none
 
     environment {
-        REACT_APP_VERSION = '1.0.$BUILD_ID'
+        REACT_APP_VERSION = "1.0.$BUILD_ID"
         APP_NAME = 'myjenkinsapp'
         AWS_DEFAULT_REGION = 'ap-northeast-2'
         AWS_ECS_CLUSTER = 'knowledgeable-crocodile-yobhcy'

@@ -5,6 +5,9 @@ pipeline {
 
     environment {
         AWS_DEFAULT_REGION = 'ap-northeast-2'
+        AWS_ECS_CLUSTER = 'knowledgeable-crocodile-yobhcy'
+        AWS_ECS_SERVICE_PROD = 'LearnJenkinsApp-Service-Prod'
+        AWS_ECS_TD_PROD = 'LearnJenkinsApp-TaskDefinition-Prod'
     }
 
     // environment {
@@ -36,7 +39,7 @@ pipeline {
                         yum install jq -y
                         LATEST_REVISION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
                         echo $LATEST_REVISION
-                        aws ecs update-service --cluster knowledgeable-crocodile-yobhcy --service LearnJenkinsApp-Service-Prod --task-definition LearnJenkinsApp-TaskDefinition-Prod:2
+                        aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE_PROD --task-definition $AWS_ECS_TD_PROD:$LATEST_REVISION
                     '''
                 }
             }
